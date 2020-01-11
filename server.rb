@@ -8,7 +8,6 @@ require "dependencies"
 
 # The server app entrypoint. We boot it from config.ru.
 # See http://roda.jeremyevans.net/ for information about the Roda framework.
-# rubocop:disable Metrics/ClassLength
 class Server < Roda
   plugin :caching
   plugin :public, gzip: true, default_mime: "text/html"
@@ -77,65 +76,6 @@ class Server < Roda
              contact_request_phone: phone,
              contact_request_message: message
            ))
-    end
-
-    r.is "contact_requests" do
-      r.get do
-        # if there has been a previous attempt, we want to show a
-        # message informing the user of success or failure
-        contact_request_result = r.session["contact_request_result"]
-
-        # recover form data if present
-        full_name = r.session["contact_request_full_name"]
-        email = r.session["contact_request_email"]
-        phone = r.session["contact_request_phone"]
-        message = r.session["contact_request_message"]
-
-        # we will show the filled form immediately after a successful attempt,
-        # but then we clear session so future page visits show an empty form
-        clear_session if contact_request_result == "success"
-
-        view("contact_requests",
-             layout_opts: { locals: layout_locals(r) },
-             locals: LAYOUT_LOCALS.merge(
-               contact_request_result: contact_request_result,
-               contact_request_full_name: full_name,
-               contact_request_email: email,
-               contact_request_phone: phone,
-               contact_request_message: message
-             ))
-      end
-
-      r.post do
-        r.session["contact_request_full_name"] = r.params["full_name"]
-        r.session["contact_request_email"] = r.params["email"]
-        r.session["contact_request_phone"] = r.params["phone"]
-        r.session["contact_request_message"] = r.params["message"]
-
-        email_body = render("contact_request_email",
-                            locals: {
-                              full_name: r.params["full_name"],
-                              email: r.params["email"],
-                              phone: r.params["phone"],
-                              message: r.params["message"]
-                            })
-
-        begin
-          ContactRequestMailer.call(
-            full_name: r.params["full_name"],
-            email: r.params["email"],
-            phone: r.params["phone"],
-            body: email_body
-          )
-          r.session["contact_request_result"] = "success"
-        rescue StandardError
-          r.session["contact_request_result"] = "failure"
-        end
-
-        r.redirect "/contact_requests"
-      rescue Roda::RodaPlugins::Sessions::CookieTooLarge => error
-        raise error
-      end
     end
 
     r.is "about" do
