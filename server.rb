@@ -27,8 +27,20 @@ class Server < Roda
             end
   plugin :default_headers, HEADERS
 
+  TITLE_LOOKUP = {
+    "/" => "Home",
+    "/about" => "About",
+    "/contact" => "Contact",
+    "/faq" => "FAQ"
+  }.freeze
+
   def layout_locals(request)
-    LAYOUT_LOCALS.merge(current_path: request.path)
+    LAYOUT_LOCALS.merge(current_path: request.path,
+                        title: title(request.path))
+  end
+
+  def title(current_path)
+    TITLE_LOOKUP[current_path] || "Pauline Bailey"
   end
 
   route do |r|
@@ -87,4 +99,3 @@ class Server < Roda
     end
   end
 end
-# rubocop:enable Metrics/ClassLength
