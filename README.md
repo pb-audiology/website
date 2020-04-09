@@ -83,15 +83,5 @@ The app requires the `heroku/nodejs` and `heroku/ruby` [buildpacks](https://devc
 * Heroku to host the application
 * Google APIs to embed a map
 * Google Domains to register the domain name and configure DNS settings
-* Google G Suite to provide email (`@auditoryprocessingservces.com`)
-
-### Email Notes
-When people submit a question via the contact form, we send an email to the business owner.
-
-In order to make this possible, G Suite needs a non-default setting, configured via https://admin.google.com:
-In Security > Advanced security settings > Less secure apps, we need to set "Allow users to manage their access to less secure apps."
-
-This enables the web server to send email on via the business owner's address. Because we use 2FA for G Suite, the business owner must generate an app password in order to let the web app authenticate. That app password is provided to the web app in an enviroment variable, following our standard approach to sensitive credentials.
-
-See https://stackoverflow.com/questions/33918448/ruby-sending-mail-via-gmail-smtp for details on gmail authentication setup.
+* Google G Suite to provide email (`@paulinebaileyaudiology.com`)
 
