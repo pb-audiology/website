@@ -1,22 +1,10 @@
 const path = require('path');
-const glob = require('glob');
 
 // extract CSS as separate files
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 // gzip compiled files
 const CompressionPlugin = require('compression-webpack-plugin');
-
-// remove unused CSS
-const PurgecssPlugin = require('purgecss-webpack-plugin');
-const PurgecssContentPaths = {
-  src: path.join(__dirname, 'views'),
-}
-class TailwindExtractor {
-  static extract(content) {
-    return content.match(/[A-Za-z0-9-_:\/]+/g) || [];
-  }
-}
 
 module.exports = {
   entry: path.resolve(__dirname, 'assets', 'index.js'),
@@ -47,21 +35,15 @@ module.exports = {
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
+        loader: 'url-loader',
+        options: {
+          limit: 100000
+        }
       }
     ]
   },
   plugins: [
     new MiniCssExtractPlugin(),
     new CompressionPlugin(),
-    new PurgecssPlugin({
-      paths: glob.sync(`${PurgecssContentPaths.src}/*`),
-      extractors: [
-        {
-          extractor: TailwindExtractor,
-          extensions: ['html', 'erb'],
-        }
-      ],
-    }),
   ],
 }
